@@ -27,7 +27,7 @@ const createTrip = async (req, res) => {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         interests,
-        participants: { create: { user: { connect: { id: req.user.id } } } } // creator is a participant
+        participants: { create: { user: { connect: { id: req.user.id } } } } 
       },
       include: { participants: true }
     });

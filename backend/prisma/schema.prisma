@@ -13,59 +13,65 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique 
-  password String
-  travelStyle Json
-  createdAt DateTime @default(now())
+  id               Int               @id @default(autoincrement())
+  name             String
+  email            String            @unique
+  password         String
+  travelStyle      Json
+  createdAt        DateTime          @default(now())
   tripParticipants TripParticipant[]
   chatMessages     ChatMessage[]
   userTravelStyles UserTravelStyle[]
 }
+
 model Trip {
-  id Int @id @default(autoincrement())
-  title String
-  destination String
-  startDate DateTime
-  endDate DateTime
-  interests Json
+  id           Int               @id @default(autoincrement())
+  title        String
+  destination  String
+  startDate    DateTime
+  endDate      DateTime
+  interests    Json
   participants TripParticipant[]
   chatMessages ChatMessage[]
-  createdAt DateTime @default(now())
+  createdAt    DateTime          @default(now())
 }
+
 model TripParticipant {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  trip Trip @relation(fields: [tripId], references: [id])
-  tripId Int
-  role String?
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  trip     Trip     @relation(fields: [tripId], references: [id])
+  tripId   Int
+  role     String?
   joinedAt DateTime @default(now())
+
   @@unique([tripId, userId])
 }
+
 model ChatMessage {
-  id Int @id @default(autoincrement())
-  trip Trip @relation(fields: [tripId], references: [id])
-  tripId Int
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  message String
+  id        Int      @id @default(autoincrement())
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  tripId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  message   String
   createdAt DateTime @default(now())
 }
+
 model TravelStyle {
-  id    Int    @id @default(autoincrement())
-  name  String @unique         
+  id    Int               @id @default(autoincrement())
+  name  String            @unique
   users UserTravelStyle[]
 }
 
 model UserTravelStyle {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  travelStyle TravelStyle @relation(fields: [travelStyleId], references: [id])
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  travelStyle   TravelStyle @relation(fields: [travelStyleId], references: [id])
   travelStyleId Int
 
-  @@unique([userId, travelStyleId]) 
+  @@unique([userId, travelStyleId])
 }

@@ -38,7 +38,7 @@ const createTrip = async (req, res) => {
   }
 };
 
-const joinTrip = async (req, res) => {
+const joinTrips = async (req, res) => {
   const tripId = parseInt(req.params.id, 10);
   const userId = req.user.id;
   try {
@@ -58,4 +58,4 @@ const joinTrip = async (req, res) => {
   }
 };
 
-module.exports = { getTrips, createTrip, joinTrip };
+module.exports = { getTrips, createTrip, joinTrips };

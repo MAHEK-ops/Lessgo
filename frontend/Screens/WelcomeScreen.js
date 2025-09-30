@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingBottom: 15,
         marginBottom: -200,
-        marginTop: -350
+        marginTop: -380
     },
     arrows: {
         position: 'absolute',

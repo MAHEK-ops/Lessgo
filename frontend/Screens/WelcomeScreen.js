@@ -4,7 +4,7 @@ import { VideoView, useVideoPlayer } from 'expo-video';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 
-const WelcomeScreen = () => {
+const WelcomeScreen = ({navigation}) => {
     const player = useVideoPlayer(
         require('./../assets/Screen Recording 2025-09-28 at 12.04.05 AM.mov'),
         (player) => {
@@ -32,8 +32,8 @@ const WelcomeScreen = () => {
                         <Feather name="chevron-up" size={24} color="rgba(255,255,255,0.5)" />
                         <Feather name="chevron-up" size={24} color="#fff" style={{ marginTop: -8 }} />
                     </View>
-                   
-                    <TouchableOpacity style={styles.button}>
+
+                    <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('Home')}>
                         <Text style={styles.buttonText}>Go</Text>
                     </TouchableOpacity>
                 </LinearGradient>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     },
     travelText: {
         fontSize: 100,
-        fontFamily: 'GreatVibes',
+        fontFamily: 'Reey',
         color: '#fff',
         textAlign: 'center',
         marginBottom: -20
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     },
     arrows: {
         position: 'absolute',
-        top: 18,         
+        top: 18,
         alignItems: 'center',
     },
     button: {

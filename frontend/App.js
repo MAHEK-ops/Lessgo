@@ -13,6 +13,9 @@ export default function App() {
     GreatVibes: require('./assets/fonts/GreatVibes-Regular.ttf'),
     Reey: require('./assets/fonts/Reey-Regular.otf'),
   });
+  if (!fontsLoaded) {
+    return <Text>Loading fonts...</Text>;
+  }
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome" >

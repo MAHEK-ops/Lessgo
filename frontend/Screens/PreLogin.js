@@ -8,7 +8,7 @@ export default function PreLogin({ navigation }) {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={require("../assets/background3.jpg")} // 👉 add your illustration here
+                source={require("./../assets/background3.jpg")} 
                 style={styles.background}
                 resizeMode="cover"
             >
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
         width: width * 0.8,
         paddingVertical: 18,
         borderRadius: 12,
-        shadowColor: "#000", // ✅ shadow
+        shadowColor: "#000", 
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.2,
         shadowRadius: 4,

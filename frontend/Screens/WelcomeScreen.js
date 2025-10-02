@@ -24,7 +24,7 @@ const WelcomeScreen = ({ navigation }) => {
     }, []);
 
     const handleGo = () => {
-        navigation.replace("Login"); // Navigate to Login if not logged in
+        navigation.replace("PreLogin"); // Navigate to Login if not logged in
     };
 
     return (

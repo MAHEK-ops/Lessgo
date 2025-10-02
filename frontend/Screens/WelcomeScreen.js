@@ -24,7 +24,7 @@ const WelcomeScreen = ({ navigation }) => {
     }, []);
 
     const handleGo = () => {
-        navigation.replace("PreLogin"); 
+        navigation.navigate("PreLogin"); 
     };
 
     return (

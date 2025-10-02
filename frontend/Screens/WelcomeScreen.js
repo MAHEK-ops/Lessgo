@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 
-const WelcomeScreen = ({navigation}) => {
+const WelcomeScreen = ({ navigation }) => {
     const player = useVideoPlayer(
         require('./../assets/Screen Recording 2025-09-28 at 12.04.05 AM.mov'),
         (player) => {
@@ -13,6 +13,19 @@ const WelcomeScreen = ({navigation}) => {
             player.muted = true;
         }
     );
+    useEffect(() => {
+        const checkLogin = async () => {
+            const loggedIn = await AsyncStorage.getItem("isLoggedIn");
+            if (loggedIn) {
+                navigation.replace("Home"); // Go to Home if logged in
+            }
+        };
+        checkLogin();
+    }, []);
+
+    const handleGo = () => {
+        navigation.replace("Login"); // Navigate to Login if not logged in
+    };
 
     return (
         <View style={styles.container}>
@@ -33,7 +46,7 @@ const WelcomeScreen = ({navigation}) => {
                         <Feather name="chevron-up" size={24} color="#fff" style={{ marginTop: -8 }} />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('Home')}>
+                    <TouchableOpacity style={styles.button} onPress={handleGo}>
                         <Text style={styles.buttonText}>Go</Text>
                     </TouchableOpacity>
                 </LinearGradient>
@@ -56,7 +69,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingBottom: 60,
-        backgroundColor: 'rgba(0,0,0,0.5)'
+        backgroundColor: 'rgba(0,0,0, 0.5)'
     },
     textWrapper: {
         alignItems: 'center',

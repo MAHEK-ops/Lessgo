@@ -17,14 +17,14 @@ const WelcomeScreen = ({ navigation }) => {
         const checkLogin = async () => {
             const loggedIn = await AsyncStorage.getItem("isLoggedIn");
             if (loggedIn) {
-                navigation.replace("Home"); // Go to Home if logged in
+                navigation.replace("Home"); 
             }
         };
         checkLogin();
     }, []);
 
     const handleGo = () => {
-        navigation.replace("PreLogin"); // Navigate to Login if not logged in
+        navigation.replace("PreLogin"); 
     };
 
     return (

@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const { width, height } = Dimensions.get("window");
 
 const WelcomeScreen = ({ navigation }) => {
     const player = useVideoPlayer(
@@ -13,18 +16,23 @@ const WelcomeScreen = ({ navigation }) => {
             player.muted = true;
         }
     );
-    useEffect(() => {
-        const checkLogin = async () => {
-            const loggedIn = await AsyncStorage.getItem("isLoggedIn");
-            if (loggedIn) {
-                navigation.replace("Home"); 
-            }
-        };
-        checkLogin();
-    }, []);
+
+    // useEffect(() => {
+    //     const checkLogin = async () => {
+    //         setTimeout(async () => {
+    //             const loggedIn = await AsyncStorage.getItem("isLoggedIn");
+    //             if (loggedIn === "true") {
+    //                 navigation.replace("Home");
+    //             }
+    //         }, 3000); // show WelcomeScreen for 3s
+    //     };
+    //     checkLogin();
+    // }, []);
+
+
 
     const handleGo = () => {
-        navigation.navigate("PreLogin"); 
+        navigation.navigate("PreLogin");
     };
 
     return (
@@ -32,14 +40,16 @@ const WelcomeScreen = ({ navigation }) => {
             <VideoView style={styles.video} player={player} contentFit="cover" />
 
             <View style={styles.overlay}>
+                {/* Top Text */}
                 <View style={styles.textWrapper}>
                     <Text style={styles.travelText}>Travel!</Text>
                     <Text style={styles.smallText}>Find your crew, make your trip</Text>
                 </View>
+
+                {/* Bottom Button */}
                 <LinearGradient
                     colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.7)']}
                     style={styles.buttonWrapper}
-
                 >
                     <View style={styles.arrows}>
                         <Feather name="chevron-up" size={24} color="rgba(255,255,255,0.5)" />
@@ -66,49 +76,45 @@ const styles = StyleSheet.create({
     },
     overlay: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'space-between', // space text at top and button at bottom
         alignItems: 'center',
-        paddingBottom: 60,
-        backgroundColor: 'rgba(0,0,0, 0.5)'
+        paddingVertical: height * 0.05,
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     textWrapper: {
         alignItems: 'center',
-        marginBottom: 700,
+        marginTop: height * 0.16,
     },
     travelText: {
-        fontSize: 100,
+        fontSize: width * 0.23, // scales with screen
         fontFamily: 'Reey',
         color: '#fff',
         textAlign: 'center',
-        marginBottom: -20
     },
     smallText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: width * 0.045,
         textAlign: 'center',
-        marginLeft: 110
+        marginLeft: width * 0.25
     },
-
     buttonWrapper: {
-        width: 85,
-        height: 150,
-        borderRadius: 50,
+        width: width * 0.22,
+        height: height * 0.18,
+        borderRadius: width * 0.12,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        paddingBottom: 15,
-        marginBottom: -200,
-        marginTop: -380
+        paddingBottom: height * 0.02,
     },
     arrows: {
         position: 'absolute',
-        top: 18,
+        top: height * 0.02,
         alignItems: 'center',
     },
     button: {
         backgroundColor: '#fff',
-        width: 70,
-        height: 70,
-        borderRadius: 35,
+        width: width * 0.18,
+        height: width * 0.18,
+        borderRadius: width * 0.09,
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 6,
@@ -118,7 +124,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: width * 0.05,
         fontWeight: 'bold',
         color: '#000',
     },

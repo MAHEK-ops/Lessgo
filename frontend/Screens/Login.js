@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { width, height } = Dimensions.get("window");
 
-export default function SignUp() {
+export default function Login({ navigation }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -42,7 +42,7 @@ export default function SignUp() {
                     value={password}
                     onChangeText={setPassword}
                 />
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Home")}>
                     <Text style={styles.buttonText}>SIGN UP</Text>
                 </TouchableOpacity>
             </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         fontWeight: "400"
     },
     topNavSelected: {
-        color: "#f4f1a6ff", 
+        color: "#f4f1a6ff",
         fontWeight: "700",
     },
     card: {

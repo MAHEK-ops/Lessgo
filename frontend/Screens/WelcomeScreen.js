@@ -17,20 +17,6 @@ const WelcomeScreen = ({ navigation }) => {
         }
     );
 
-    // useEffect(() => {
-    //     const checkLogin = async () => {
-    //         setTimeout(async () => {
-    //             const loggedIn = await AsyncStorage.getItem("isLoggedIn");
-    //             if (loggedIn === "true") {
-    //                 navigation.replace("Home");
-    //             }
-    //         }, 3000); // show WelcomeScreen for 3s
-    //     };
-    //     checkLogin();
-    // }, []);
-
-
-
     const handleGo = () => {
         navigation.navigate("PreLogin");
     };
@@ -40,13 +26,11 @@ const WelcomeScreen = ({ navigation }) => {
             <VideoView style={styles.video} player={player} contentFit="cover" />
 
             <View style={styles.overlay}>
-                {/* Top Text */}
                 <View style={styles.textWrapper}>
                     <Text style={styles.travelText}>Travel!</Text>
                     <Text style={styles.smallText}>Find your crew, make your trip</Text>
                 </View>
 
-                {/* Bottom Button */}
                 <LinearGradient
                     colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.7)']}
                     style={styles.buttonWrapper}
@@ -75,27 +59,38 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
     overlay: {
-        flex: 1,
-        justifyContent: 'space-between', // space text at top and button at bottom
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: height * 0.05,
         backgroundColor: 'rgba(0,0,0,0.5)',
+        paddingVertical: '8%',
     },
     textWrapper: {
         alignItems: 'center',
-        marginTop: height * 0.16,
+        justifyContent: 'center',
+        flex: 1,
+        marginTop: -height * 0.15,
     },
     travelText: {
-        fontSize: width * 0.23, // scales with screen
+        fontSize: width * 0.23,
         fontFamily: 'Reey',
         color: '#fff',
         textAlign: 'center',
+        includeFontPadding: false, // fixes Android extra spacing
+        textAlignVertical: 'center', // ensures vertical centering
     },
     smallText: {
         color: '#fff',
         fontSize: width * 0.045,
         textAlign: 'center',
-        marginLeft: width * 0.25
+        includeFontPadding: false,
+        textAlignVertical: 'center',
+        marginTop: -height * 0.01,
+        marginLeft: width * 0.2,
     },
     buttonWrapper: {
         width: width * 0.22,
@@ -104,6 +99,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         paddingBottom: height * 0.02,
+        marginBottom: height * 0.04,
     },
     arrows: {
         position: 'absolute',
@@ -129,3 +125,20 @@ const styles = StyleSheet.create({
         color: '#000',
     },
 });
+
+
+
+
+
+
+// useEffect(() => {
+    //     const checkLogin = async () => {
+    //         setTimeout(async () => {
+    //             const loggedIn = await AsyncStorage.getItem("isLoggedIn");
+    //             if (loggedIn === "true") {
+    //                 navigation.replace("Home");
+    //             }
+    //         }, 3000); // show WelcomeScreen for 3s
+    //     };
+    //     checkLogin();
+    // }, []);

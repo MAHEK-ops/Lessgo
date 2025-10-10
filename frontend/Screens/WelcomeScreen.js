@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Reey',
         color: '#fff',
         textAlign: 'center',
-        includeFontPadding: false, // fixes Android extra spacing
-        textAlignVertical: 'center', // ensures vertical centering
+        includeFontPadding: false, 
+        textAlignVertical: 'center', 
     },
     smallText: {
         color: '#fff',

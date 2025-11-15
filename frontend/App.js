@@ -8,6 +8,7 @@ import Login from './Screens/Login';
 import SignUp from './Screens/SignUp';
 import PreLogin from './Screens/PreLogin';
 import Destinations from './Screens/Destinations';
+import MainTabs from './Screens/MainTabs';
 import { useFonts } from 'expo-font';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
@@ -30,19 +31,15 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName="Welcome"
-      >
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="PreLogin" component={PreLogin} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Destinations" component={Destinations} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
       </Stack.Navigator>
-      <StatusBar style="auto" />
     </NavigationContainer>
+
   );
 }
 

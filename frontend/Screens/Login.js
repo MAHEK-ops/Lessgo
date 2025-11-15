@@ -18,7 +18,6 @@ export default function Login({ navigation }) {
             imageStyle={styles.imageStyle}
             resizeMode="cover"
         >
-            {/* Top Navigation */}
             <View style={styles.topNav}>
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={[styles.topNavText, styles.topNavSelected]}>SIGN IN</Text>
@@ -29,11 +28,9 @@ export default function Login({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            {/* Registration Card */}
             <View style={styles.card}>
                 <Text style={styles.title}>Welcome back!</Text>
 
-                {/* Username Field */}
                 <View style={styles.inputContainer}>
                     <Ionicons name="person-outline" size={22} color="#4c7b77ff" style={styles.icon} />
                     <TextInput
@@ -45,9 +42,7 @@ export default function Login({ navigation }) {
                     />
                 </View>
 
-                
 
-                {/* Password Field */}
                 <View style={styles.inputContainer}>
                     <Ionicons name="lock-closed-outline" size={22} color="#4c7b77ff" style={styles.icon} />
                     <TextInput

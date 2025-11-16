@@ -37,7 +37,7 @@ const WelcomeScreen = ({ navigation }) => {
                 >
                     <View style={styles.arrows}>
                         <Feather name="chevron-up" size={24} color="rgba(255,255,255,0.5)" />
-                        <Feather name="chevron-up" size={24} color="#fff" style={{ marginTop: -8 }} />
+                        <Feather name="chevron-up" size={24} color="#fff" style={{ marginTop: -8}} />
                     </View>
 
                     <TouchableOpacity style={styles.button} onPress={handleGo}>

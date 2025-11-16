@@ -6,22 +6,20 @@ import {
   StyleSheet,
   Animated,
   ImageBackground,
-  FlatList,
   Image,
   TouchableOpacity,
-  Platform,
-  Dimensions,
 } from "react-native";
+
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { RFPercentage } from "react-native-responsive-fontsize";
 
-const { width: SCREEN_W } = Dimensions.get("window");
+import { RFPercentage } from "react-native-responsive-fontsize";
 
 const DATA = [
   {
@@ -50,8 +48,9 @@ const DATA = [
   },
 ];
 
-const CARD_WIDTH = wp("28%");
-const CARD_SPACING = wp("4%");
+// Card sizes
+const CARD_WIDTH = wp("35%");
+const CARD_SPACING = wp("0%");
 const FULL_CARD = CARD_WIDTH + CARD_SPACING * 2;
 
 export default function Destinations() {
@@ -60,70 +59,71 @@ export default function Destinations() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatRef = useRef(null);
 
-  // update activeIndex live while scrolling
+  // Track active card while scrolling
   useEffect(() => {
     const id = scrollX.addListener(({ value }) => {
       const idx = Math.round(value / FULL_CARD);
-      if (idx >= 0 && idx < DATA.length && idx !== activeIndex) {
+      if (idx !== activeIndex && idx >= 0 && idx < DATA.length) {
         setActiveIndex(idx);
       }
     });
+
     return () => scrollX.removeListener(id);
   }, [activeIndex]);
 
-  const onMomentumScrollEnd = (ev) => {
-    const offset = ev.nativeEvent.contentOffset.x;
-    const index = Math.round(offset / FULL_CARD);
-    setActiveIndex(index);
-  };
-
+  // Manual navigation buttons
   const goPrev = () => {
-    const next = Math.max(0, activeIndex - 1);
-    flatRef.current?.scrollToOffset({ offset: next * FULL_CARD, animated: true });
-    setActiveIndex(next);
+    const i = Math.max(0, activeIndex - 1);
+    flatRef.current?.scrollToOffset({ offset: i * FULL_CARD, animated: true });
+    setActiveIndex(i);
   };
 
   const goNext = () => {
-    const next = Math.min(DATA.length - 1, activeIndex + 1);
-    flatRef.current?.scrollToOffset({ offset: next * FULL_CARD, animated: true });
-    setActiveIndex(next);
+    const i = Math.min(DATA.length - 1, activeIndex + 1);
+    flatRef.current?.scrollToOffset({ offset: i * FULL_CARD, animated: true });
+    setActiveIndex(i);
   };
 
+  // Background parallax
   const heroTranslateY = scrollY.interpolate({
     inputRange: [0, hp("40%")],
     outputRange: [0, -hp("6%")],
     extrapolate: "clamp",
   });
 
-  const currentBg = DATA[activeIndex]?.src ?? DATA[0].src;
-  const currentTitle = DATA[activeIndex]?.title ?? "";
-  const currentDesc = DATA[activeIndex]?.desc ?? "";
+  // Dynamic background & text
+  const current = DATA[activeIndex];
 
   return (
     <View style={styles.container}>
-      {/* Full-screen hero background (covers whole screen, no white margins) */}
+
+      {/* Full-screen hero background */}
       <Animated.View style={[styles.heroWrap, { transform: [{ translateY: heroTranslateY }] }]}>
-        <ImageBackground source={{ uri: currentBg }} style={styles.hero}>
-          <LinearGradient colors={["rgba(0,0,0,0.12)", "rgba(0,0,0,0.78)"]} style={StyleSheet.absoluteFill} />
+        <ImageBackground source={{ uri: current.src }} style={styles.hero}>
+          <LinearGradient
+            colors={["rgba(0,0,0,0.12)", "rgba(0,0,0,0.78)"]}
+            style={StyleSheet.absoluteFill}
+          />
         </ImageBackground>
       </Animated.View>
 
-      {/* content scroll - transparent background so hero shows through */}
+      {/* Foreground scroll */}
       <Animated.ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-          useNativeDriver: true,
-        })}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
         scrollEventThrottle={16}
       >
-        {/* Title & text derived from active carousel item */}
+        {/* Title + Description */}
         <View style={styles.headerContent}>
-          <Text style={styles.title}>{currentTitle}</Text>
+          <Text style={styles.title}>{current.title}</Text>
 
           <BlurView intensity={50} tint="dark" style={styles.descBlur}>
-            <Text style={styles.desc} numberOfLines={3} ellipsizeMode="tail">
-              {currentDesc}
+            <Text style={styles.desc} numberOfLines={3}>
+              {current.desc}
             </Text>
           </BlurView>
 
@@ -132,14 +132,17 @@ export default function Destinations() {
           </TouchableOpacity>
         </View>
 
-        {/* Carousel area */}
+        {/* Carousel */}
         <View style={styles.carouselArea}>
+
+          {/* Left arrow */}
           <BlurView intensity={80} tint="light" style={styles.arrowBlur}>
             <TouchableOpacity onPress={goPrev} style={styles.arrowTouch}>
               <Ionicons name="chevron-back" size={RFPercentage(3)} color="#111" />
             </TouchableOpacity>
           </BlurView>
 
+          {/* Cards */}
           <Animated.FlatList
             ref={flatRef}
             horizontal
@@ -149,32 +152,28 @@ export default function Destinations() {
             contentContainerStyle={{ paddingHorizontal: wp("10%") }}
             snapToInterval={FULL_CARD}
             decelerationRate="fast"
-            onMomentumScrollEnd={onMomentumScrollEnd}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-              useNativeDriver: true,
-            })}
+            onMomentumScrollEnd={(e) => {
+              const index = Math.round(e.nativeEvent.contentOffset.x / FULL_CARD);
+              setActiveIndex(index);
+            }}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: true }
+            )}
             renderItem={({ item, index }) => {
-              const inputRange = [
-                (index - 2) * FULL_CARD,
-                (index - 1) * FULL_CARD,
-                index * FULL_CARD,
-                (index + 1) * FULL_CARD,
-                (index + 2) * FULL_CARD,
-              ];
               const scale = scrollX.interpolate({
-                inputRange,
-                outputRange: [0.86, 0.92, 1.08, 0.92, 0.86],
-                extrapolate: "clamp",
-              });
-              const opacity = scrollX.interpolate({
-                inputRange,
-                outputRange: [0.6, 0.85, 1, 0.85, 0.6],
+                inputRange: [
+                  (index - 1) * FULL_CARD,
+                  index * FULL_CARD,
+                  (index + 1) * FULL_CARD,
+                ],
+                outputRange: [0.6, 0.8, 0.6],
                 extrapolate: "clamp",
               });
 
               return (
                 <View style={{ width: FULL_CARD, alignItems: "center" }}>
-                  <Animated.View style={[styles.cardGlass, { transform: [{ scale }], opacity }]}>
+                  <Animated.View style={[styles.cardGlass, { transform: [{ scale }] }]}>
                     <Image source={{ uri: item.src }} style={styles.cardImage} />
                   </Animated.View>
                 </View>
@@ -182,6 +181,7 @@ export default function Destinations() {
             }}
           />
 
+          {/* Right arrow */}
           <BlurView intensity={80} tint="light" style={styles.arrowBlur}>
             <TouchableOpacity onPress={goNext} style={styles.arrowTouch}>
               <Ionicons name="chevron-forward" size={RFPercentage(3)} color="#111" />
@@ -189,45 +189,55 @@ export default function Destinations() {
           </BlurView>
         </View>
 
-        {/* pagination */}
+        {/* Pagination dots */}
+        {/* Pagination dots */}
         <View style={styles.pagination}>
-          {DATA.map((_, i) => (
-            <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
-          ))}
+          {DATA.map((_, i) => {
+            const isActive = i === activeIndex;
+
+            return (
+              <View key={i} style={styles.dotWrapper}>
+
+                {isActive ? (
+                  <View style={styles.activeNumberWrap}>
+                    <Text style={styles.activeNumberText}>{i + 1}</Text>
+                  </View>
+                ) : (
+                  <View style={styles.inactiveDot} />
+                )}
+
+              </View>
+            );
+          })}
         </View>
 
-        {/* Extra bottom spacer so last elements don't clash with safe area */}
+
         <View style={{ height: hp("8%") }} />
       </Animated.ScrollView>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "transparent" },
+  container: { flex: 1 },
 
   heroWrap: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "100%", // full-screen hero
-    zIndex: 0,
+    top: 0, left: 0, right: 0,
+    height: "100%",
   },
 
   hero: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
   },
 
   scroll: {
     flex: 1,
-    zIndex: 2,
   },
 
   scrollContent: {
-    // leave room for the floating tab bar at the top (adjust if your tabs move)
     paddingTop: hp("14%"),
     paddingBottom: hp("6%"),
   },
@@ -239,12 +249,9 @@ const styles = StyleSheet.create({
 
   title: {
     color: "#fff",
-    fontSize: RFPercentage(6.2),
+    fontSize: RFPercentage(6),
     fontWeight: "800",
-    marginBottom: hp("0.6%"),
-    textShadowColor: "rgba(0,0,0,0.45)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
+    marginBottom: hp("1%"),
   },
 
   descBlur: {
@@ -252,7 +259,7 @@ const styles = StyleSheet.create({
     padding: hp("1.2%"),
     marginBottom: hp("1.2%"),
     width: wp("86%"),
-    overflow: Platform.OS === "android" ? "hidden" : "visible",
+    overflow: "hidden",
   },
 
   desc: {
@@ -264,14 +271,9 @@ const styles = StyleSheet.create({
   exploreBtn: {
     backgroundColor: "#3B71F3",
     paddingVertical: hp("1.2%"),
-    paddingHorizontal: wp("5.5%"),
+    paddingHorizontal: wp("5%"),
     borderRadius: 12,
     alignSelf: "flex-start",
-    marginTop: hp("1%"),
-    shadowColor: "#3B71F3",
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    elevation: 6,
   },
 
   exploreText: {
@@ -283,16 +285,15 @@ const styles = StyleSheet.create({
   carouselArea: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: hp("3%"),
+    marginTop: hp("22%"),
   },
 
   arrowBlur: {
     width: wp("11%"),
     height: wp("11%"),
-    borderRadius: wp("11%") / 2,
-    alignItems: "center",
+    borderRadius: 100,
     justifyContent: "center",
-    marginHorizontal: wp("1%"),
+    alignItems: "center",
     overflow: "hidden",
   },
 
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
   cardGlass: {
     width: CARD_WIDTH,
     height: hp("24%"),
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "rgba(255,255,255,0.12)",
   },
@@ -314,26 +315,39 @@ const styles = StyleSheet.create({
   cardImage: {
     width: "100%",
     height: "100%",
-    borderRadius: 12,
-    resizeMode: "cover",
+    borderRadius: 20,
   },
 
   pagination: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: hp("2%"),
+    alignItems: "center",
+    marginTop: hp("2.5%"),
   },
 
-  dot: {
-    width: wp("2.6%"),
-    height: wp("2.6%"),
-    backgroundColor: "rgba(255,255,255,0.45)",
+  dotWrapper: {
+    marginHorizontal: wp("1.3%"),
+  },
+
+  inactiveDot: {
+    width: wp("2.5%"),
+    height: wp("2.5%"),
     borderRadius: 50,
-    marginHorizontal: wp("1%"),
+    backgroundColor: "rgba(255,255,255,0.35)",
   },
 
-  dotActive: {
-    width: wp("3.8%"),
-    backgroundColor: "#fff",
+  activeNumberWrap: {
+    width: wp("7%"),
+    height: wp("7%"),
+    borderRadius: 100,
+    backgroundColor: "rgba(255,255,255,0.7)", // bright white
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  activeNumberText: {
+    fontSize: RFPercentage(2.2),
+    fontWeight: "700",
+    color: "#333",
   },
 });

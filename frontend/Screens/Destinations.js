@@ -1,4 +1,4 @@
-// src/screens/Destination/DestinationScreen.js
+// Destinations.js
 import React, { useRef, useEffect, useState } from "react";
 import {
   View,
@@ -10,6 +10,7 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  Dimensions,
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,65 +21,94 @@ import {
 } from "react-native-responsive-screen";
 import { RFPercentage } from "react-native-responsive-fontsize";
 
+const { width: SCREEN_W } = Dimensions.get("window");
+
 const DATA = [
-  { id: "1", src: "https://picsum.photos/900/1200?random=101" },
-  { id: "2", src: "https://picsum.photos/900/1200?random=102" },
-  { id: "3", src: "https://picsum.photos/900/1200?random=103" },
-  { id: "4", src: "https://picsum.photos/900/1200?random=104" },
+  {
+    id: "1",
+    src: "https://picsum.photos/1080/1920?random=201",
+    title: "Kerala",
+    desc: "God's Own Country — backwaters, green hills, and spice-scented air.",
+  },
+  {
+    id: "2",
+    src: "https://picsum.photos/1080/1920?random=202",
+    title: "Goa",
+    desc: "Beaches, sunsets, and chilled-out nightlife.",
+  },
+  {
+    id: "3",
+    src: "https://picsum.photos/1080/1920?random=203",
+    title: "Himachal",
+    desc: "Mountains, trekking, and pine-scented trails.",
+  },
+  {
+    id: "4",
+    src: "https://picsum.photos/1080/1920?random=204",
+    title: "Rajasthan",
+    desc: "Desert forts, colorful markets, and royal palaces.",
+  },
 ];
 
 const CARD_WIDTH = wp("28%");
 const CARD_SPACING = wp("4%");
 const FULL_CARD = CARD_WIDTH + CARD_SPACING * 2;
 
-export default function DestinationScreen() {
+export default function Destinations() {
   const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
   const flatRef = useRef(null);
-  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // update activeIndex live while scrolling
+  useEffect(() => {
+    const id = scrollX.addListener(({ value }) => {
+      const idx = Math.round(value / FULL_CARD);
+      if (idx >= 0 && idx < DATA.length && idx !== activeIndex) {
+        setActiveIndex(idx);
+      }
+    });
+    return () => scrollX.removeListener(id);
+  }, [activeIndex]);
 
   const onMomentumScrollEnd = (ev) => {
-    const offsetX = ev.nativeEvent.contentOffset.x;
-    const index = Math.round(offsetX / FULL_CARD);
+    const offset = ev.nativeEvent.contentOffset.x;
+    const index = Math.round(offset / FULL_CARD);
     setActiveIndex(index);
   };
 
   const goPrev = () => {
     const next = Math.max(0, activeIndex - 1);
-    flatRef.current.scrollToOffset({ offset: next * FULL_CARD, animated: true });
+    flatRef.current?.scrollToOffset({ offset: next * FULL_CARD, animated: true });
     setActiveIndex(next);
   };
 
   const goNext = () => {
     const next = Math.min(DATA.length - 1, activeIndex + 1);
-    flatRef.current.scrollToOffset({ offset: next * FULL_CARD, animated: true });
+    flatRef.current?.scrollToOffset({ offset: next * FULL_CARD, animated: true });
     setActiveIndex(next);
   };
 
-  // Parallax translate for hero image
   const heroTranslateY = scrollY.interpolate({
     inputRange: [0, hp("40%")],
     outputRange: [0, -hp("6%")],
     extrapolate: "clamp",
   });
 
-  const currentBg = DATA[activeIndex]?.src;
+  const currentBg = DATA[activeIndex]?.src ?? DATA[0].src;
+  const currentTitle = DATA[activeIndex]?.title ?? "";
+  const currentDesc = DATA[activeIndex]?.desc ?? "";
 
   return (
     <View style={styles.container}>
-      {/* HERO BACKGROUND */}
-      <Animated.View
-        style={[styles.heroWrap, { transform: [{ translateY: heroTranslateY }] }]}
-      >
+      {/* Full-screen hero background (covers whole screen, no white margins) */}
+      <Animated.View style={[styles.heroWrap, { transform: [{ translateY: heroTranslateY }] }]}>
         <ImageBackground source={{ uri: currentBg }} style={styles.hero}>
-          <LinearGradient
-            colors={["rgba(0,0,0,0.12)", "rgba(0,0,0,0.75)"]}
-            style={StyleSheet.absoluteFill}
-          />
+          <LinearGradient colors={["rgba(0,0,0,0.12)", "rgba(0,0,0,0.78)"]} style={StyleSheet.absoluteFill} />
         </ImageBackground>
       </Animated.View>
 
-      {/* SCROLL CONTENT */}
+      {/* content scroll - transparent background so hero shows through */}
       <Animated.ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -87,31 +117,26 @@ export default function DestinationScreen() {
         })}
         scrollEventThrottle={16}
       >
-        {/* TITLE + DESCRIPTION */}
+        {/* Title & text derived from active carousel item */}
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Kerala</Text>
+          <Text style={styles.title}>{currentTitle}</Text>
 
           <BlurView intensity={50} tint="dark" style={styles.descBlur}>
-            <Text style={styles.desc}>
-              Known as "God’s Own Country", Kerala is full of backwaters, lush hills,
-              beaches and incredible monsoon scenery.
+            <Text style={styles.desc} numberOfLines={3} ellipsizeMode="tail">
+              {currentDesc}
             </Text>
           </BlurView>
 
-          {/* EXPLORE BUTTON */}
-          <View style={styles.glowWrap}>
-            <TouchableOpacity activeOpacity={0.9} style={styles.exploreBtn}>
-              <Text style={styles.exploreText}>Explore</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity activeOpacity={0.9} style={styles.exploreBtn}>
+            <Text style={styles.exploreText}>Explore</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* CAROUSEL */}
+        {/* Carousel area */}
         <View style={styles.carouselArea}>
-          {/* LEFT ARROW */}
           <BlurView intensity={80} tint="light" style={styles.arrowBlur}>
             <TouchableOpacity onPress={goPrev} style={styles.arrowTouch}>
-              <Ionicons name="arrow-back" size={RFPercentage(3)} color="#111" />
+              <Ionicons name="chevron-back" size={RFPercentage(3)} color="#111" />
             </TouchableOpacity>
           </BlurView>
 
@@ -125,10 +150,9 @@ export default function DestinationScreen() {
             snapToInterval={FULL_CARD}
             decelerationRate="fast"
             onMomentumScrollEnd={onMomentumScrollEnd}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: true }
-            )}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+              useNativeDriver: true,
+            })}
             renderItem={({ item, index }) => {
               const inputRange = [
                 (index - 2) * FULL_CARD,
@@ -137,16 +161,14 @@ export default function DestinationScreen() {
                 (index + 1) * FULL_CARD,
                 (index + 2) * FULL_CARD,
               ];
-
               const scale = scrollX.interpolate({
                 inputRange,
                 outputRange: [0.86, 0.92, 1.08, 0.92, 0.86],
                 extrapolate: "clamp",
               });
-
               const opacity = scrollX.interpolate({
                 inputRange,
-                outputRange: [0.6, 0.8, 1, 0.8, 0.6],
+                outputRange: [0.6, 0.85, 1, 0.85, 0.6],
                 extrapolate: "clamp",
               });
 
@@ -160,34 +182,37 @@ export default function DestinationScreen() {
             }}
           />
 
-          {/* RIGHT ARROW */}
           <BlurView intensity={80} tint="light" style={styles.arrowBlur}>
             <TouchableOpacity onPress={goNext} style={styles.arrowTouch}>
-              <Ionicons name="arrow-forward" size={RFPercentage(3)} color="#111" />
+              <Ionicons name="chevron-forward" size={RFPercentage(3)} color="#111" />
             </TouchableOpacity>
           </BlurView>
         </View>
 
-        {/* DOTS */}
+        {/* pagination */}
         <View style={styles.pagination}>
           {DATA.map((_, i) => (
             <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
           ))}
         </View>
+
+        {/* Extra bottom spacer so last elements don't clash with safe area */}
+        <View style={{ height: hp("8%") }} />
       </Animated.ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "transparent" },
 
   heroWrap: {
-    height: hp("58%"),
-    width: "100%",
     position: "absolute",
     top: 0,
-    zIndex: 1,
+    left: 0,
+    right: 0,
+    height: "100%", // full-screen hero
+    zIndex: 0,
   },
 
   hero: {
@@ -202,8 +227,9 @@ const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingTop: hp("16%"), // ⭐ Keeps content below floating tabs
-    paddingBottom: hp("8%"),
+    // leave room for the floating tab bar at the top (adjust if your tabs move)
+    paddingTop: hp("14%"),
+    paddingBottom: hp("6%"),
   },
 
   headerContent: {
@@ -213,45 +239,44 @@ const styles = StyleSheet.create({
 
   title: {
     color: "#fff",
-    fontSize: RFPercentage(6.6),
+    fontSize: RFPercentage(6.2),
     fontWeight: "800",
-    marginBottom: hp("1%"),
+    marginBottom: hp("0.6%"),
+    textShadowColor: "rgba(0,0,0,0.45)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
 
   descBlur: {
     borderRadius: 14,
-    padding: hp("1.6%"),
-    marginBottom: hp("1.6%"),
+    padding: hp("1.2%"),
+    marginBottom: hp("1.2%"),
     width: wp("86%"),
     overflow: Platform.OS === "android" ? "hidden" : "visible",
   },
 
   desc: {
     color: "#fff",
-    fontSize: RFPercentage(2.1),
-    lineHeight: RFPercentage(3),
-  },
-
-  glowWrap: {
-    alignSelf: "flex-start",
-    marginTop: hp("1%"),
-    shadowColor: "#3B71F3",
-    shadowOpacity: 0.45,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 8,
+    fontSize: RFPercentage(2),
+    lineHeight: RFPercentage(2.8),
   },
 
   exploreBtn: {
     backgroundColor: "#3B71F3",
-    paddingVertical: hp("1.4%"),
-    paddingHorizontal: wp("6%"),
+    paddingVertical: hp("1.2%"),
+    paddingHorizontal: wp("5.5%"),
     borderRadius: 12,
+    alignSelf: "flex-start",
+    marginTop: hp("1%"),
+    shadowColor: "#3B71F3",
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 6,
   },
 
   exploreText: {
     color: "#fff",
-    fontSize: RFPercentage(2.4),
+    fontSize: RFPercentage(2.2),
     fontWeight: "700",
   },
 
@@ -262,9 +287,9 @@ const styles = StyleSheet.create({
   },
 
   arrowBlur: {
-    width: wp("12%"),
-    height: wp("12%"),
-    borderRadius: wp("12%") / 2,
+    width: wp("11%"),
+    height: wp("11%"),
+    borderRadius: wp("11%") / 2,
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: wp("1%"),
@@ -283,9 +308,7 @@ const styles = StyleSheet.create({
     height: hp("24%"),
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.12)",
   },
 
   cardImage: {

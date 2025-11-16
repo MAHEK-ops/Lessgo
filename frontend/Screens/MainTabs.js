@@ -1,55 +1,137 @@
+// MainTabs.js
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Dimensions } from "react-native";
+
 import Destinations from "./Destinations";
 import CreateTripScreen from "./CreateTripScreen";
 import ChatScreen from "./ChatScreen";
 import TripDetailsScreen from "./TripDetailsScreen";
 import ProfileScreen from "./ProfileScreen";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function MainTabs() {
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-            <Tab.Navigator
-                initialRouteName="Destinations"
-                screenOptions={{
-                    swipeEnabled: true,
-                    lazy: true,
-                    tabBarScrollEnabled: true, // more like a website
-                    tabBarStyle: {
-                        backgroundColor: "transparent",
-                        elevation: 0,
-                        shadowOpacity: 0,
-                        height: 60,
-                    },
-                    tabBarItemStyle: {
-                        width: "auto",
-                        paddingHorizontal: 20,
-                    },
-                    tabBarLabelStyle: {
-                        fontSize: 15,
-                        fontWeight: "700",
-                        color: "#ffffff",
-                        textTransform: "none",
-                    },
-                    tabBarIndicatorStyle: {
-                        backgroundColor: "#ffffff",
-                        height: 3,
-                        borderRadius: 2,
-                        width: 60,
-                        marginLeft: 20,
-                    },
-                    tabBarPressColor: "rgba(255,255,255,0.1)",
-                }}
-            >
-                <Tab.Screen name="Destinations" component={Destinations} />
-                <Tab.Screen name="Create Trip" component={CreateTripScreen} />
-                <Tab.Screen name="Chat" component={ChatScreen} />
-                <Tab.Screen name="Trip Details" component={TripDetailsScreen} />
-                <Tab.Screen name="Profile" component={ProfileScreen} />
-            </Tab.Navigator>
-        </SafeAreaView>
-    );
+  const insets = useSafeAreaInsets();
+  const { width } = Dimensions.get("window");
+
+  // Responsive icon size
+  const iconSize = width < 380 ? 22 : width < 430 ? 24 : 26;
+
+  // Flexible width for each tab
+  const tabFlexBasis = width / 5.5; // slightly smaller than 20% each
+
+  return (
+    <Tab.Navigator
+      initialRouteName="Destinations"
+      screenOptions={({ route }) => ({
+        swipeEnabled: true,
+        lazy: true,
+
+        tabBarStyle: {
+          position: "absolute",
+          top: insets.top + 10,
+          left: 0,
+          right: 0,
+          backgroundColor: "transparent",
+          elevation: 0,
+          shadowOpacity: 0,
+          zIndex: 999,
+        },
+
+        // ⭐ FLEX-BASED RESPONSIVE TAB SIZE
+        tabBarItemStyle: {
+          flexBasis: tabFlexBasis,
+          flexGrow: 0,
+          flexShrink: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+
+        tabBarShowLabel: false,
+
+        tabBarIndicatorStyle: {
+          backgroundColor: "#fff",
+          height: 3,
+          borderRadius: 2,
+        },
+
+        tabBarPressColor: "rgba(255,255,255,0.12)",
+
+        tabBarIcon: () => null,
+      })}
+    >
+      <Tab.Screen
+        name="Destinations"
+        component={Destinations}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="earth-outline"
+              size={iconSize}
+              color={focused ? "#fff" : "rgba(255,255,255,0.7)"}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="CreateTrip"
+        component={CreateTripScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="add-circle-outline"
+              size={iconSize}
+              color={focused ? "#fff" : "rgba(255,255,255,0.7)"}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="chatbubble-outline"
+              size={iconSize}
+              color={focused ? "#fff" : "rgba(255,255,255,0.7)"}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="TripDetails"
+        component={TripDetailsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="map-outline"
+              size={iconSize}
+              color={focused ? "#fff" : "rgba(255,255,255,0.7)"}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="person-outline"
+              size={iconSize}
+              color={focused ? "#fff" : "rgba(255,255,255,0.7)"}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
 }

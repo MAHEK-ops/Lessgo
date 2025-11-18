@@ -1,54 +1,42 @@
 // Destinations.js
 import React, { useRef, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Animated, ImageBackground, Image, TouchableOpacity } from "react-native";
 
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import {widthPercentageToDP as wp,heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 const DATA = [
   {
     id: "1",
-    src: "https://picsum.photos/1080/1920?random=201",
-    title: "Kerala",
-    desc: "God's Own Country — backwaters, green hills, and spice-scented air.",
+    src: require("./../assets/spitiValley.jpg"),
+    title: "Spiti Valley",
+    desc: "Mountains, trekking, and pine-scented trails.",
   },
   {
     id: "2",
-    src: "https://picsum.photos/1080/1920?random=202",
+    src: require("./../assets/Goa.jpg"),
     title: "Goa",
     desc: "Beaches, sunsets, and chilled-out nightlife.",
   },
   {
     id: "3",
-    src: "https://picsum.photos/1080/1920?random=203",
-    title: "Himachal",
-    desc: "Mountains, trekking, and pine-scented trails.",
+    src: require("./../assets/kerala.jpg"),
+    title: "Kerala",
+    desc: "God's Own Country — backwaters, green hills, and spice-scented air.",
   },
   {
     id: "4",
-    src: "https://picsum.photos/1080/1920?random=204",
+    src: require("./../assets/Rajasthan.jpg"),
     title: "Rajasthan",
     desc: "Desert forts, colorful markets, and royal palaces.",
   },
 ];
 
-// Card sizes
 const CARD_WIDTH = wp("35%");
 const CARD_SPACING = wp("0%");
 const FULL_CARD = CARD_WIDTH + CARD_SPACING * 2;
@@ -59,7 +47,6 @@ export default function Destinations() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatRef = useRef(null);
 
-  // Track active card while scrolling
   useEffect(() => {
     const id = scrollX.addListener(({ value }) => {
       const idx = Math.round(value / FULL_CARD);
@@ -71,7 +58,6 @@ export default function Destinations() {
     return () => scrollX.removeListener(id);
   }, [activeIndex]);
 
-  // Manual navigation buttons
   const goPrev = () => {
     const i = Math.max(0, activeIndex - 1);
     flatRef.current?.scrollToOffset({ offset: i * FULL_CARD, animated: true });
@@ -84,22 +70,19 @@ export default function Destinations() {
     setActiveIndex(i);
   };
 
-  // Background parallax
   const heroTranslateY = scrollY.interpolate({
     inputRange: [0, hp("40%")],
     outputRange: [0, -hp("6%")],
     extrapolate: "clamp",
   });
 
-  // Dynamic background & text
   const current = DATA[activeIndex];
 
   return (
     <View style={styles.container}>
 
-      {/* Full-screen hero background */}
       <Animated.View style={[styles.heroWrap, { transform: [{ translateY: heroTranslateY }] }]}>
-        <ImageBackground source={{ uri: current.src }} style={styles.hero}>
+        <ImageBackground source={current.src} style={styles.hero}>
           <LinearGradient
             colors={["rgba(0,0,0,0.12)", "rgba(0,0,0,0.78)"]}
             style={StyleSheet.absoluteFill}
@@ -107,7 +90,6 @@ export default function Destinations() {
         </ImageBackground>
       </Animated.View>
 
-      {/* Foreground scroll */}
       <Animated.ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -117,7 +99,6 @@ export default function Destinations() {
         )}
         scrollEventThrottle={16}
       >
-        {/* Title + Description */}
         <View style={styles.headerContent}>
           <Text style={styles.title}>{current.title}</Text>
 
@@ -132,17 +113,14 @@ export default function Destinations() {
           </TouchableOpacity>
         </View>
 
-        {/* Carousel */}
         <View style={styles.carouselArea}>
 
-          {/* Left arrow */}
           <BlurView intensity={80} tint="light" style={styles.arrowBlur}>
             <TouchableOpacity onPress={goPrev} style={styles.arrowTouch}>
               <Ionicons name="chevron-back" size={RFPercentage(3)} color="#111" />
             </TouchableOpacity>
           </BlurView>
 
-          {/* Cards */}
           <Animated.FlatList
             ref={flatRef}
             horizontal
@@ -174,14 +152,12 @@ export default function Destinations() {
               return (
                 <View style={{ width: FULL_CARD, alignItems: "center" }}>
                   <Animated.View style={[styles.cardGlass, { transform: [{ scale }] }]}>
-                    <Image source={{ uri: item.src }} style={styles.cardImage} />
+                    <Image source={item.src} style={styles.cardImage} />
                   </Animated.View>
                 </View>
               );
             }}
           />
-
-          {/* Right arrow */}
           <BlurView intensity={80} tint="light" style={styles.arrowBlur}>
             <TouchableOpacity onPress={goNext} style={styles.arrowTouch}>
               <Ionicons name="chevron-forward" size={RFPercentage(3)} color="#111" />
@@ -189,26 +165,13 @@ export default function Destinations() {
           </BlurView>
         </View>
 
-        {/* Pagination dots */}
-        {/* Pagination dots */}
         <View style={styles.pagination}>
-          {DATA.map((_, i) => {
-            const isActive = i === activeIndex;
-
-            return (
-              <View key={i} style={styles.dotWrapper}>
-
-                {isActive ? (
-                  <View style={styles.activeNumberWrap}>
-                    <Text style={styles.activeNumberText}>{i + 1}</Text>
-                  </View>
-                ) : (
-                  <View style={styles.inactiveDot} />
-                )}
-
-              </View>
-            );
-          })}
+          {DATA.map((_, i) => (
+            <View
+              key={i}
+              style={[styles.dot, i === activeIndex && styles.dotActive]}
+            />
+          ))}
         </View>
 
 
@@ -238,7 +201,7 @@ const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingTop: hp("14%"),
+    paddingTop: hp("21%"),
     paddingBottom: hp("6%"),
   },
 
@@ -249,9 +212,9 @@ const styles = StyleSheet.create({
 
   title: {
     color: "#fff",
-    fontSize: RFPercentage(6),
+    fontSize: RFPercentage(5),
     fontWeight: "800",
-    marginBottom: hp("1%"),
+    marginBottom: hp("3%"),
   },
 
   descBlur: {
@@ -270,10 +233,11 @@ const styles = StyleSheet.create({
 
   exploreBtn: {
     backgroundColor: "#3B71F3",
-    paddingVertical: hp("1.2%"),
+    paddingVertical: hp("1.3%"),
     paddingHorizontal: wp("5%"),
     borderRadius: 12,
     alignSelf: "flex-start",
+    margin: wp("2%")
   },
 
   exploreText: {
@@ -285,7 +249,7 @@ const styles = StyleSheet.create({
   carouselArea: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: hp("22%"),
+    marginTop: hp("18%"),
   },
 
   arrowBlur: {
@@ -321,33 +285,17 @@ const styles = StyleSheet.create({
   pagination: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
-    marginTop: hp("2.5%"),
+    marginTop: hp("2%"),
   },
-
-  dotWrapper: {
-    marginHorizontal: wp("1.3%"),
-  },
-
-  inactiveDot: {
-    width: wp("2.5%"),
-    height: wp("2.5%"),
+  dot: {
+    width: wp("2.6%"),
+    height: wp("2.6%"),
     borderRadius: 50,
-    backgroundColor: "rgba(255,255,255,0.35)",
+    marginHorizontal: wp("1%"),
+    backgroundColor: "rgba(255,255,255,0.45)",
   },
-
-  activeNumberWrap: {
-    width: wp("7%"),
-    height: wp("7%"),
-    borderRadius: 100,
-    backgroundColor: "rgba(255,255,255,0.7)", // bright white
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  activeNumberText: {
-    fontSize: RFPercentage(2.2),
-    fontWeight: "700",
-    color: "#333",
+  dotActive: {
+    width: wp("3.8%"),
+    backgroundColor: "#fff",
   },
 });

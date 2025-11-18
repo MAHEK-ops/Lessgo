@@ -1,4 +1,3 @@
-// MainTabs.js
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,12 +16,9 @@ export default function MainTabs() {
   const insets = useSafeAreaInsets();
   const { width } = Dimensions.get("window");
 
-  // Responsive icon size
   const iconSize = width < 380 ? 22 : width < 430 ? 24 : 26;
 
-  // Flexible width for each tab
-  const tabFlexBasis = width / 5.5; // slightly smaller than 20% each
-
+  const tabFlexBasis = width / 5.5; 
   return (
     <Tab.Navigator
       initialRouteName="Destinations"
@@ -41,7 +37,6 @@ export default function MainTabs() {
           zIndex: 999,
         },
 
-        // ⭐ FLEX-BASED RESPONSIVE TAB SIZE
         tabBarItemStyle: {
           flexBasis: tabFlexBasis,
           flexGrow: 0,
@@ -74,6 +69,7 @@ export default function MainTabs() {
               color={focused ? "#fff" : "rgba(255,255,255,0.7)"}
             />
           ),
+          
         }}
       />
 

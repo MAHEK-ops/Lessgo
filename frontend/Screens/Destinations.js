@@ -15,13 +15,13 @@ const DATA = [
     id: "1",
     src: require("./../assets/spitiValley.jpg"),
     title: "Spiti Valley",
-    desc: "Mountains, trekking, and pine-scented trails.",
+    desc: "Rugged mountains, quiet monasteries, pure adventure.",
   },
   {
     id: "2",
     src: require("./../assets/Goa.jpg"),
     title: "Goa",
-    desc: "Beaches, sunsets, and chilled-out nightlife.",
+    desc: "Beaches, sunsets, carefree vibes and chilled-out nightlife.",
   },
   {
     id: "3",
@@ -33,7 +33,7 @@ const DATA = [
     id: "4",
     src: require("./../assets/Rajasthan.jpg"),
     title: "Rajasthan",
-    desc: "Desert forts, colorful markets, and royal palaces.",
+    desc: "Royal forts, desert skies, colorful markets, and vibrant culture.",
   },
 ];
 

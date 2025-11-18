@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         marginBottom: 100,
     },
     title: {
-        fontSize: 50,
+        fontSize: 55,
         fontWeight: 400,
         color: "#2c3e3f",
         fontFamily: "French",

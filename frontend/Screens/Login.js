@@ -57,7 +57,7 @@ export default function Login({ navigation }) {
 
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate("Home")}
+                    onPress={() => navigation.navigate("MainTabs")}
                 >
                     <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>

@@ -57,7 +57,7 @@ export default function CreateTripScreen() {
 
           <Text style={styles.label}>Trip Interests</Text>
           <View style={styles.interestContainer}>
-            {["Beach", "Culture", "Adventure", "Food", "Nightlife", "Nature", "Photography", "Shopping"].map(item => (
+            {["Beach", "Culture", "Adventure", "Food", "Nightlife", "Nature", "Photography", "Shopping","trek"].map(item => (
               <TouchableOpacity key={item} style={styles.interestBadge}>
                 <Text style={styles.interestText}>{item}</Text>
               </TouchableOpacity>

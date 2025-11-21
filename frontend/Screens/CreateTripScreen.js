@@ -2,16 +2,17 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, ImageBackground } from "react-native";
 import { BlurView } from 'expo-blur';
 import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function CreateTripScreen() {
   return (
     <ImageBackground
-      source={require("./../assets/camping.jpg")}
+      source={require("./../assets/chat.jpg")}
       style={styles.bg}
     >
       <ScrollView contentContainerStyle={styles.container}>
         <BlurView intensity={50} tint="light" style={styles.formCard}>
-          
+
           <Text style={styles.heading}>Create a Trip</Text>
 
           <Text style={styles.label}>Destination</Text>
@@ -56,13 +57,28 @@ export default function CreateTripScreen() {
           />
 
           <Text style={styles.label}>Trip Interests</Text>
+
           <View style={styles.interestContainer}>
-            {["Beach", "Culture", "Adventure", "Food", "Nightlife", "Nature", "Photography", "Shopping","trek"].map(item => (
-              <TouchableOpacity key={item} style={styles.interestBadge}>
-                <Text style={styles.interestText}>{item}</Text>
+            {[
+              { label: "Beach", icon: "water" },
+              { label: "Culture", icon: "globe-outline" },
+              { label: "Adventure", icon: "walk-outline" },
+              { label: "Food", icon: "cafe-outline" },
+              { label: "Nightlife", icon: "musical-notes-outline" },
+              { label: "Nature", icon: "leaf-outline" },
+              { label: "Photography", icon: "camera-outline" },
+              { label: "Shopping", icon: "bag-handle-outline" },
+              { label: "Trek", icon: "walk-outline" },
+            ].map((item) => (
+              <TouchableOpacity key={item.label} style={styles.interestBadge}>
+                <View style={styles.iconWrapper}>
+                  <Ionicons name={item.icon} size={22} color="#333" />
+                </View>
+                <Text style={styles.interestText}>{item.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
+
 
           <Text style={[styles.label, { marginTop: 25 }]}>Trip Description</Text>
           <TextInput
@@ -140,7 +156,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   interestBadge: {
-    backgroundColor: "rgba(255,255,255,0.8)",
+    backgroundColor: "rgba(219, 214, 214, 0.8)",
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 20,

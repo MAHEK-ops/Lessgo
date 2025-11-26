@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id               Int               @id @default(autoincrement())
   name             String
@@ -21,6 +22,7 @@ model User {
   password         String
   travelStyle      Json
   createdAt        DateTime          @default(now())
+
   tripParticipants TripParticipant[]
   chatMessages     ChatMessage[]
   userTravelStyles UserTravelStyle[]
@@ -33,29 +35,38 @@ model Trip {
   startDate    DateTime
   endDate      DateTime
   interests    Json
+  createdAt    DateTime          @default(now())
+
   participants TripParticipant[]
   chatMessages ChatMessage[]
-  createdAt    DateTime          @default(now())
 }
+
 
 model TripParticipant {
   id       Int      @id @default(autoincrement())
+
   user     User     @relation(fields: [userId], references: [id])
   userId   Int
+
   trip     Trip     @relation(fields: [tripId], references: [id])
   tripId   Int
+
   role     String?
   joinedAt DateTime @default(now())
 
   @@unique([tripId, userId])
 }
 
+
 model ChatMessage {
   id        Int      @id @default(autoincrement())
+
   trip      Trip     @relation(fields: [tripId], references: [id])
   tripId    Int
+
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
+
   message   String
   createdAt DateTime @default(now())
 }
@@ -63,13 +74,16 @@ model ChatMessage {
 model TravelStyle {
   id    Int               @id @default(autoincrement())
   name  String            @unique
+
   users UserTravelStyle[]
 }
 
 model UserTravelStyle {
   id            Int         @id @default(autoincrement())
+
   user          User        @relation(fields: [userId], references: [id])
   userId        Int
+
   travelStyle   TravelStyle @relation(fields: [travelStyleId], references: [id])
   travelStyleId Int
 

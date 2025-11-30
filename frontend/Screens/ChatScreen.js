@@ -1,137 +1,255 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  Image,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import {View,Text,StyleSheet,Image,TextInput,TouchableOpacity,ScrollView,ImageBackground,KeyboardAvoidingView,Platform,} from "react-native";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function ChatScreen() {
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
-    { id: "1", text: "Hey! How can I help you today?", sender: "other" },
-    { id: "2", text: "I want to plan a trip 😄", sender: "me" },
+    {
+      id: 1,
+      user: "Lara",
+      avatar: require("./../assets/travelAir.jpg"),
+      text: "Hey everyone! Just landed. The view is absolutely surreal.",
+      mine: false,
+    },
+    {
+      id: 2,
+      user: "You",
+      avatar: require("../assets/jetski.jpg"),
+      text: "Amazing! Can’t wait to get there. How’s the weather?",
+      mine: true,
+    },
   ]);
 
-  const [input, setInput] = useState("");
-
   const sendMessage = () => {
-    if (input.trim() === "") return;
+    if (!message.trim()) return;
 
     const newMessage = {
-      id: Date.now().toString(),
-      text: input,
-      sender: "me",
+      id: Date.now(),
+      user: "You",
+      avatar: require("./../assets/jetski.jpg"),
+      text: message,
+      mine: true,
     };
 
     setMessages([...messages, newMessage]);
-    setInput("");
+    setMessage("");
   };
 
-  const renderItem = ({ item }) => (
-    <View
-      style={[
-        styles.bubble,
-        item.sender === "me" ? styles.myBubble : styles.otherBubble,
-      ]}
-    >
-      <Text style={item.sender === "me" ? styles.myText : styles.otherText}>
-        {item.text}
-      </Text>
-    </View>
-  );
-
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <ImageBackground
+      source={require("./../assets/chat.jpg")}
+      style={styles.bg}
     >
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ padding: 20 }}
+      <LinearGradient
+        colors={["rgba(0,0,0,0.6)", "rgba(0,0,0,0.2)"]}
+        style={styles.overlay}
       />
 
-      {/* Input Bar */}
-      <View style={styles.inputBar}>
-        <TextInput
-          placeholder="Message..."
-          placeholderTextColor="#666"
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-        />
-
-        <TouchableOpacity onPress={sendMessage} style={styles.sendBtn}>
-          <Ionicons name="send" size={22} color="#fff" />
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Spiti Valley Adventure</Text>
+        <TouchableOpacity>
+          <Text style={styles.menu}>⋮</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingVertical: 20 }}
+      >
+        <View style={styles.tabsContainer}>
+          <Text style={[styles.tab, styles.activeTab]}>Spiti Valley Adventure</Text>
+          <Text style={styles.tab}>Bali Escape</Text>
+          <Text style={styles.tab}>Tokyo ’24</Text>
+        </View>
+
+        <View style={styles.dateTag}>
+          <Text style={styles.dateText}>Today</Text>
+        </View>
+
+        {messages.map((msg) => (
+          <View
+            key={msg.id}
+            style={[
+              styles.messageRow,
+              msg.mine ? styles.rightRow : styles.leftRow,
+            ]}
+          >
+            {!msg.mine && (
+              <Image source={msg.avatar} style={styles.avatar} />
+            )}
+
+            <BlurView
+              intensity={50}
+              tint="dark"
+              style={[
+                styles.messageBubble,
+                msg.mine ? styles.myBubble : styles.otherBubble,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.messageSender,
+                  msg.mine && { textAlign: "right" },
+                ]}
+              >
+                {msg.user}
+              </Text>
+
+              <Text style={styles.messageText}>{msg.text}</Text>
+            </BlurView>
+          </View>
+        ))}
+      </ScrollView>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.inputContainer}>
+          <BlurView intensity={40} tint="dark" style={styles.inputBlur}>
+            <TextInput
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Type your message..."
+              placeholderTextColor="#ccc"
+              style={styles.input}
+            />
+          </BlurView>
+
+          <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+            <Text style={styles.sendIcon}>➤</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#403d3dff",
-  },
+  bg: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFillObject },
 
-  /* chat bubbles */
-  bubble: {
-    maxWidth: "75%",
-    padding: 12,
-    borderRadius: 18,
-    marginBottom: 12,
+  header: {
+    marginTop: 135,
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  myBubble: {
-    backgroundColor: "#000",
-    marginLeft: "auto",
-    borderBottomRightRadius: 0,
+  headerTitle: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "700",
   },
-  otherBubble: {
-    backgroundColor: "#EDEDED",
-    marginRight: "auto",
-    borderBottomLeftRadius: 0,
-  },
-  myText: {
+  menu: {
+    fontSize: 26,
     color: "#fff",
   },
-  otherText: {
-    color: "#000",
-  },
 
-  /* input bar */
-  inputBar: {
+  tabsContainer: {
     flexDirection: "row",
-    padding: 12,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    borderTopWidth: 1,
-    borderColor: "#eee",
+    paddingHorizontal: 20,
+    marginBottom: 15,
   },
-
-  input: {
-    flex: 1,
-    backgroundColor: "#F0F0F0",
-    padding: 12,
-    borderRadius: 25,
-    paddingHorizontal: 18,
+  tab: {
+    color: "#bbb",
+    marginRight: 20,
     fontSize: 15,
-    color: "#000",
+  },
+  activeTab: {
+    color: "#fff",
+    borderBottomWidth: 2,
+    borderColor: "#b9a1ff55",
+    paddingBottom: 4,
   },
 
-  sendBtn: {
-    marginLeft: 10,
-    backgroundColor: "#000",
-    padding: 12,
+  dateTag: {
+    alignSelf: "center",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  dateText: {
+    color: "#fff",
+    fontSize: 12,
+  },
+
+  messageRow: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  leftRow: { justifyContent: "flex-start" },
+  rightRow: { justifyContent: "flex-end" },
+
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 50,
+    marginRight: 10,
+  },
+
+  messageBubble: {
+    maxWidth: "75%",
     borderRadius: 25,
-    justifyContent: "center",
+    padding: 15,
+    overflow: "hidden",
+  },
+
+  otherBubble: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+  },
+  myBubble: {
+    backgroundColor: "#b9a1ff55",
+  },
+
+  messageSender: {
+    color: "#ccc",
+    fontSize: 12,
+    marginBottom: 5,
+  },
+
+  messageText: {
+    color: "#fff",
+    fontSize: 15,
+    lineHeight: 21,
+  },
+
+  inputContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     alignItems: "center",
+  },
+  inputBlur: {
+    flex: 1,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  input: {
+    color: "#fff",
+    fontSize: 15,
+  },
+
+  sendButton: {
+    marginLeft: 10,
+    backgroundColor: "#b9a1ff55",
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sendIcon: {
+    fontSize: 22,
+    color: "#fff",
+    marginLeft: 3,
   },
 });

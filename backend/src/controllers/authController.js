@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const prisma = require("../prismaClient");
 
-// Generate JWT
+// Helper: Generate JWT
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -33,13 +33,12 @@ exports.registerUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        travelStyle: travelStyle || {}, // default empty JSON
+        travelStyle: travelStyle || {}, 
       },
     });
 

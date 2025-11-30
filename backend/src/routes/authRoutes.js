@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser, getMe } = require("../controllers/authController");
+const {
+  registerUser,
+  loginUser,
+  getMe
+} = require("../controllers/authController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -8,7 +12,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
 
-// Protected route 
+// Protected route (example)
 router.get("/me", authMiddleware, getMe);
 
 module.exports = router;
